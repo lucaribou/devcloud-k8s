@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 variable "prefix" {
-  default = "devcloud"
+  default = "devcloud01"
   description = "A prefix used for all resources in this example"
 }
 

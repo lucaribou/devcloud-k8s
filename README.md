@@ -1,4 +1,4 @@
-# devcloud-k8s
+# devcloud01-k8s
 
 ## Create AKS cluster
 - Login in Azure `az login`
@@ -8,8 +8,8 @@
 - Get the resource group name and cluster name used before and launch the following commands :
 
 ```bash
-AKS_NAME='devcloud-k8s'
-RESOURCE_GROUP='devcloud-k8s-resources'
+AKS_NAME='devcloud01-k8s'
+RESOURCE_GROUP='devcloud01-k8s-resources'
 az aks update -g $RESOURCE_GROUP -n $AKS_NAME --enable-oidc-issuer --enable-workload-identity --no-wait
 ```
 
@@ -18,8 +18,8 @@ az aks update -g $RESOURCE_GROUP -n $AKS_NAME --enable-oidc-issuer --enable-work
 
 - We need a managed identity for this :
 ```bash
-RESOURCE_GROUP='devcloud-k8s-resources'
-AKS_NAME='devcloud-k8s'
+RESOURCE_GROUP='devcloud01-k8s-resources'
+AKS_NAME='devcloud01-k8s'
 IDENTITY_RESOURCE_NAME='azure-alb-identity'
 
 mcResourceGroup=$(az aks show --resource-group $RESOURCE_GROUP --name $AKS_NAME --query "nodeResourceGroup" -o tsv)
@@ -50,8 +50,8 @@ helm install alb-controller oci://mcr.microsoft.com/application-lb/charts/alb-co
 ## Create Application Gateway for Containers managed by ALB Controller
 
 ```bash
-AKS_NAME='devcloud-k8'
-RESOURCE_GROUP='devcloud-k8s-resources'
+AKS_NAME='devcloud01-k8s'
+RESOURCE_GROUP='devcloud01-k8s-resources'
 
 MC_RESOURCE_GROUP=$(az aks show --name $AKS_NAME --resource-group $RESOURCE_GROUP --query "nodeResourceGroup" -o tsv)
 CLUSTER_SUBNET_ID=$(az vmss list --resource-group $MC_RESOURCE_GROUP --query '[0].virtualMachineProfile.networkProfile.networkInterfaceConfigurations[0].ipConfigurations[0].subnet.id' -o tsv)
