@@ -1,0 +1,25 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: prod-web
+spec:
+  gatewayClassName: azure-alb-external
+  listeners:
+  - protocol: HTTP
+    port: 80
+    name: prod-web-gw
+    allowedRoutes:
+      namespaces:
+        from: Same
+
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: foo
+spec:
+  parentRefs:
+  - name: prod-web
+  rules:
+  - backendRefs:
+    - name: hello-node-svc
+      port: 8080
