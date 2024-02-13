@@ -21,10 +21,9 @@ spec:
           from: All
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: ClusterIssuer
 metadata:
   name: letsencrypt
-  namespace: default
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
@@ -42,13 +41,14 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: secure
+  namespace: projectcontour
   annotations:
-    cert-manager.io/issuer: letsencrypt
+    cert-manager.io/cluster-issuer: letsencrypt
 spec:
   gatewayClassName: contour
   listeners:
     - name: http
-      hostname: nodetest.jaipasraisonla.team
+      hostname: devcloudtest.jaipasraisonla.team
       port: 443
       protocol: HTTPS
       allowedRoutes:
@@ -57,7 +57,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: node-com-tls
+          - name: devcloud-tls
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
