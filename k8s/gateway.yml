@@ -1,19 +1,24 @@
-apiVersion: gateway.networking.k8s.io/v1
-kind: Gateway
+kind: GatewayClass
+apiVersion: gateway.networking.k8s.io/v1beta1
 metadata:
-  name: prod-web
-  annotations:
-    alb.networking.azure.io/alb-namespace: alb-test-infra
-    alb.networking.azure.io/alb-name: alb-test
+  name: contour
 spec:
-  gatewayClassName: azure-alb-external
+  controllerName: projectcontour.io/gateway-controller
+---
+kind: Gateway
+apiVersion: gateway.networking.k8s.io/v1beta1
+metadata:
+  name: contour
+  namespace: projectcontour
+spec:
+  gatewayClassName: contour
   listeners:
-  - protocol: HTTP
-    port: 80
-    name: prod-web-gw
-    allowedRoutes:
-      namespaces:
-        from: Same
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: All
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
@@ -21,8 +26,8 @@ metadata:
   name: foo
 spec:
   parentRefs:
-  - name: prod-web
+  - name: contour
   rules:
   - backendRefs:
     - name: hello-node-svc
-      port: 8080
+      port: 80
