@@ -20,13 +20,52 @@ spec:
         namespaces:
           from: All
 ---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+  namespace: default
+spec:
+  acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: example-issuer-account-key
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: contour
+                namespace: projectcontour
+                kind: Gateway
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: secure
+  annotations:
+    cert-manager.io/issuer: letsencrypt
+spec:
+  gatewayClassName: contour
+  listeners:
+    - name: http
+      hostname: nodetest.jaipasraisonla.team
+      port: 443
+      protocol: HTTPS
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: node-com-tls
+---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
   name: foo
 spec:
   parentRefs:
-  - name: contour
+  - name: secure
   rules:
   - backendRefs:
     - name: hello-node-svc
